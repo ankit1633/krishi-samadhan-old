@@ -1,32 +1,31 @@
-import React from 'react'
-import {AppBar, Toolbar, Box, Typography, styled} from '@mui/material';
-import CustomButtons from './CustomButtons';
+import React from 'react';
+import { AppBar, Toolbar, Box, styled } from '@mui/material';
+import CustomButtons from './CustomButtons'; // Adjust path if necessary
+import logo from './logo2.jpeg'; 
 
-
-const header = () => {
+const Header = () => {
 
     const StyledHeader = styled(AppBar)`
-    background: #008000;
-    height: 55px;
-`;
+        background: #008000;
+        height: 60px;
+    `;
     const Image = styled('img')({
-        width: 30,
-        height: 30
-    })
-
-
-  return (
-    <StyledHeader>
-        <Toolbar>
-            <Box style={{display:'flex'}}>
-                <Typography>Krishi-Samadhan</Typography>
-                <Image src='https://png.pngtree.com/png-clipart/20230710/original/pngtree-shetkari-raja-png-image_9290533.png' alt='logo' />
-                <CustomButtons />
-            </Box>
-        </Toolbar>
+        width: 100,
+        height: 50
         
-    </StyledHeader>
-  )
-}
+    });
 
-export default header;
+    return (
+        <StyledHeader>
+            <Toolbar>
+                <Box style={{ display: 'flex', alignItems: 'center'}}>
+                    {/* <Typography>Krishi-Samadhan</Typography> */}
+                    <Image src={logo} alt='logo' />
+                    <CustomButtons />
+                </Box>
+            </Toolbar>
+        </StyledHeader>
+    );
+};
+
+export default Header;

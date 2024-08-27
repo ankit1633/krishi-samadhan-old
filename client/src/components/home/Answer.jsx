@@ -4,7 +4,7 @@ import { authenticateGetAnswer } from '../../service/api';
 
 const StyledAnswerContainer = styled(Box)({
   padding: '20px',
-  backgroundColor: '#f7f7f7',
+  backgroundColor: 'rgba(247, 247, 247, 0.5)', // Semi-transparent background
   borderRadius: '8px',
   boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
   marginBottom: '20px',
@@ -13,10 +13,12 @@ const StyledAnswerContainer = styled(Box)({
 const StyledQuestion = styled(Typography)({
   fontWeight: 'bold',
   marginBottom: '10px',
+  color: '#000', // Adjust text color for visibility
 });
 
 const StyledAnswer = styled(Typography)({
   marginBottom: '10px',
+  color: '#000', // Adjust text color for visibility
 });
 
 const StyledHeader = styled(Typography)({
@@ -24,6 +26,7 @@ const StyledHeader = styled(Typography)({
   fontSize: '24px',
   fontWeight: 'bold',
   marginBottom: '20px',
+  color: '#000', // Adjust text color for visibility
 });
 
 const StyledButton = styled(Button)({
