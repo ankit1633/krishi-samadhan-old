@@ -7,6 +7,7 @@ import Question from './Question';
 import Problem from './Problem';
 import Solution from './Solution';
 import Warehouse from './Warehouse';
+import Weather from './Weather'; // Import the Weather component
 
 const LoginButton = styled(Button)`
     color: #008000;
@@ -45,12 +46,15 @@ const CustomButtons = () => {
     const [openWarehouse, setOpenWarehouse] = useState(false);
     const [openProblem, setOpenProblem] = useState(false);
     const [openSolution, setOpenSolution] = useState(false);
+    const [openWeather, setOpenWeather] = useState(false); // New state for Weather component
 
     const openDialog = () => setOpen(true);
     const openQuestionDialog = () => setOpenQuestion(true);
     const openWarehouseDialog = () => setOpenWarehouse(true);
     const openProblemDialog = () => setOpenProblem(true);
     const openSolutionDialog = () => setOpenSolution(true);
+    const openWeatherDialog = () => setOpenWeather(true); // Open Weather Dialog
+    const closeWeatherDialog = () => setOpenWeather(false); // Close Weather Dialog
 
     return (
         <Wrapper>
@@ -59,15 +63,27 @@ const CustomButtons = () => {
                     <LoginButton variant='contained' onClick={openDialog} style={{ marginLeft: 30 }}> Login/Sign-up </LoginButton>
             }
 
-            {user && <LoginButton variant='contained' onClick={openQuestionDialog} style={{ marginLeft: 30 }}>{user === "farmer" ? <Typography style={{ display: 'flex' }}>Ask a question</Typography> : <Typography style={{ display: 'flex' }}>Answer a question</Typography>}</LoginButton>}
-            {user && <LoginButton variant='contained' onClick={openProblemDialog} style={{ marginLeft: 30 }}>{user === "farmer" ? <Typography style={{ display: 'flex' }}>Ask a Problem</Typography> : <Typography style={{ display: 'flex' }}>Answer a problem</Typography>}</LoginButton>}
-            {user && <LoginButton variant='contained' onClick={openSolutionDialog} style={{ marginLeft: 30 }}>{user === "farmer" ? <Typography style={{ display: 'flex' }}>Solutions</Typography> : null}</LoginButton>}
-            {user && <LoginButton variant='contained' onClick={openWarehouseDialog} style={{ marginLeft: 30 }}>{user === "farmer" ? <Typography style={{ display: 'flex' }}>Warehouse List</Typography> : <Typography style={{ display: 'flex' }}>Add warehouse</Typography>}</LoginButton>}
+            {user && <LoginButton variant='contained' onClick={openQuestionDialog} style={{ marginLeft: 30 }}>
+                {user === "farmer" ? <Typography style={{ display: 'flex' }}>Ask a question</Typography> : <Typography style={{ display: 'flex' }}>Answer a question</Typography>}
+            </LoginButton>}
+            {user && <LoginButton variant='contained' onClick={openProblemDialog} style={{ marginLeft: 30 }}>
+                {user === "farmer" ? <Typography style={{ display: 'flex' }}>Ask a Problem</Typography> : <Typography style={{ display: 'flex' }}>Answer a problem</Typography>}
+            </LoginButton>}
+            {user && <LoginButton variant='contained' onClick={openSolutionDialog} style={{ marginLeft: 30 }}>
+                {user === "farmer" ? <Typography style={{ display: 'flex' }}>Solutions</Typography> : null}
+            </LoginButton>}
+            {user && <LoginButton variant='contained' onClick={openWarehouseDialog} style={{ marginLeft: 30 }}>
+                {user === "farmer" ? <Typography style={{ display: 'flex' }}>Warehouse List</Typography> : <Typography style={{ display: 'flex' }}>Add warehouse</Typography>}
+            </LoginButton>}
+            {user && <LoginButton variant='contained' onClick={openWeatherDialog} style={{ marginLeft: 30 }}>
+                <Typography style={{ display: 'flex' }}>Weather</Typography>
+            </LoginButton>}
             <LoginDialog open={open} setOpen={setOpen} />
             <Question openQuestion={openQuestion} setQuestionDialog={setOpenQuestion} />
             <Warehouse openWarehouse={openWarehouse} setWarehouseDialog={setOpenWarehouse} />
             <Problem openProblem={openProblem} setProblemDialog={setOpenProblem} />
             <Solution openSolution={openSolution} setSolutionDialog={setOpenSolution} />
+            {openWeather && <Weather />} {/* Conditionally render the Weather component */}
         </Wrapper>
     );
 };
