@@ -1,34 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, IconButton, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import axios from 'axios';
+import { authenticateGetWeather } from '../../service/api'; // Ensure correct import
 
 const Weather = () => {
     const [weatherData, setWeatherData] = useState([]);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false); // Changed to false initially
-    const [open, setOpen] = useState(false); // State to control dialog visibility
-
-    const apiKey = '36051bea39feb1ba9d732baebc7bfb98'; // Replace with your OpenWeatherMap API key
+    const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const fetchWeather = async (lat, lon) => {
             try {
                 setLoading(true);
-                const response = await axios.get(
-                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
-                );
+                const response = await authenticateGetWeather(lat, lon);
                 if (response.status === 200) {
                     const data = response.data;
                     setWeatherData([
                         {
                             id: data.id,
                             name: data.name,
-                            description: data.weather[0].description,
-                            temperature: data.main.temp,
-                            humidity: data.main.humidity,
-                            windSpeed: data.wind.speed,
-                            rainChance: data.rain ? (data.rain['1h'] || 0) : 0, // Rain in the last 1 hour, or 0 if no rain
+                            description: data.description,
+                            temperature: data.temperature,
+                            humidity: data.humidity,
+                            windSpeed: data.windSpeed,
+                            rainChance: data.rainChance,
                         },
                     ]);
                     setError(null);
@@ -36,7 +32,7 @@ const Weather = () => {
                     setError('Error loading weather data');
                 }
             } catch (error) {
-                console.error("Error occurred while fetching weather data:", error);
+                console.error('Error occurred while fetching weather data:', error);
                 setError('Error loading weather data');
             } finally {
                 setLoading(false);
@@ -50,7 +46,7 @@ const Weather = () => {
                         const { latitude, longitude } = position.coords;
                         fetchWeather(latitude, longitude);
                     },
-                    (error) => {
+                    () => {
                         setError('Error retrieving location');
                         setLoading(false);
                     }
@@ -61,10 +57,10 @@ const Weather = () => {
             }
         };
 
-        if (open) { // Fetch weather only if the dialog is open
+        if (open) {
             getLocation();
         }
-    }, [open]); // Add 'open' as a dependency to fetch weather data when dialog opens
+    }, [open]);
 
     const handleOpen = () => {
         setOpen(true);
@@ -79,12 +75,7 @@ const Weather = () => {
             <Button variant="contained" color="primary" onClick={handleOpen} style={{ marginBottom: '1rem' }}>
                 Show Weather
             </Button>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                maxWidth="md"
-                fullWidth
-            >
+            <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>
                     Weather Information
                     <IconButton

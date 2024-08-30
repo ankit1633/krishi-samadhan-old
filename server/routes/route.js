@@ -1,5 +1,5 @@
 import express from 'express';
-import { userSignup, userLogIn, expertLogIn,userLogout, addQuestion,distributorSignup,distributorLogIn, getQuestion,addWarehouse,getWarehouse, addAnswer, getAnswer , addProblem , getProblem, addProblemAnswer,getSolution} from '../controller/user-controller.js';
+import { userSignup, userLogIn, expertLogIn,userLogout, addQuestion,distributorSignup,distributorLogIn,getWeather, getQuestion,addWarehouse,getWarehouse, addAnswer, getAnswer , addProblem , getProblem, addProblemAnswer,getSolution} from '../controller/user-controller.js';
 import { authenticateToken } from '../util/SecretToken.js';
 import cookieParser from 'cookie-parser';
 const router = express.Router();
@@ -38,5 +38,6 @@ router.post('/problems', authenticateToken, upload.single('img'), addProblem); /
 router.get('/problems', authenticateToken, getProblem);
 router.post('/answer-problem', authenticateToken, addProblemAnswer);
 router.get('/solutions', authenticateToken,getSolution);
+router.get('/weather',  getWeather);
 
 export default router;

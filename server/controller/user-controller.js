@@ -10,7 +10,11 @@ import { createSecretToken } from '../util/SecretToken.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import cloudinary from '../util/Cloudinary.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
+
+const apiKey = process.env.WEATHER_API_KEY;
 
 export const userSignup = async (req, res) => {
     try {
@@ -409,5 +413,42 @@ export const getSolution = async (req, res) => {
     } catch (error) {
         console.error('Error fetching problems:', error.message);
         res.status(500).json({ message: error.message });
+    }
+};
+
+export const getWeather = async (req, res) => {
+    try {
+        const { lat, lon } = req.query;
+        
+        if (!lat || !lon) {
+            return res.status(400).json({ message: 'Latitude and longitude are required' });
+        }
+
+        const response = await axios.get('https://api.openweathermap.org/data/2.5/weather', {
+            params: {
+                lat,
+                lon,
+                appid: apiKey,
+                units: 'metric',
+            }
+        });
+
+        if (response.status === 200) {
+            const data = response.data;
+            return res.status(200).json({
+                id: data.id,
+                name: data.name,
+                description: data.weather[0].description,
+                temperature: data.main.temp,
+                humidity: data.main.humidity,
+                windSpeed: data.wind.speed,
+                rainChance: data.rain ? (data.rain['1h'] || 0) : 0,
+            });
+        } else {
+            return res.status(response.status).json({ message: 'Error loading weather data' });
+        }
+    } catch (error) {
+        console.error("Error fetching weather data:", error.message);
+        return res.status(500).json({ message: error.message });
     }
 };

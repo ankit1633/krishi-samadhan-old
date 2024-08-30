@@ -157,3 +157,17 @@ export const authenticateGetSolution = async (email) => {
         throw error;
     }
 };
+
+export const authenticateGetWeather = async (lat, lon) => {
+    try {
+        const response = await axios.get(`${URL}/weather`, {
+            params: { lat, lon },
+            withCredentials: true,
+        });
+        return response;
+    } catch (error) {
+        console.log('Error while calling get-weather API', error);
+        // Return the response error in case of failure
+        return error.response ? error.response : { status: 500, data: { message: 'An unknown error occurred' } };
+    }
+};
