@@ -1,24 +1,23 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Paper, Box, styled, Dialog } from '@mui/material';
-import axios from 'axios';
 import { DataContext } from '../../context/DataProvider';
 import { authenticateGetSolution } from '../../service/api';
 
-const URL = 'http://localhost:8000';  // Replace with your server URL
+const URL = 'http://localhost:8000';  // Your server URL
 
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
     background-color: #f0f0f0;
     border-radius: 10px;
-    width: 80%; /* Adjusted width */
-    max-width: 800px; /* Added max-width for responsiveness */
-    height: 80%; /* Adjusted height */
-    max-height: 600px; /* Added max-height for responsiveness */
+    width: 80%;
+    max-width: 800px;
+    height: 80%;
+    max-height: 600px;
   }
 `;
 
 const Solution = ({ openSolution, setSolutionDialog }) => {
-    const { user } = useContext(DataContext);
+    const { user, account } = useContext(DataContext);
     const [problems, setProblems] = useState([]);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -27,29 +26,31 @@ const Solution = ({ openSolution, setSolutionDialog }) => {
         const fetchProblems = async () => {
             try {
                 if (user) {
-                    const response = await authenticateGetSolution(user.email);
-                    console.log('Response:', response);  // Optional: Log response to inspect
-
-                    if (response && response.data) {
-                        setProblems(response.data);
+                    const response = await authenticateGetSolution(account);
+                    console.log('API Response:', response);  // Log the response
+    
+                    if (response.data && response.data.data) {
+                        setProblems(response.data.data);  // Set problems from response
                         setError(null);
                     } else {
-                        setError('Error loading problems: No response data');
+                        setError('Error loading problems: No data found');
                     }
+                } else {
+                    setError('No user email provided');
                 }
             } catch (error) {
                 console.error("Error occurred while fetching problems:", error);
                 setError('Error loading problems: Network error');
             }
         };
-
-        if (openSolution && user) {  // Only fetch problems if the dialog is open and user is defined
+    
+        if (openSolution) {
             fetchProblems();
         }
-    }, [openSolution, user]);
+    }, [openSolution, user, account]);
 
     const handleOpenImage = (imageUrl) => {
-        setSelectedImage(imageUrl);
+        setSelectedImage(imageUrl); // Set the selected image URL
     };
 
     const handleCloseImage = () => {
@@ -69,12 +70,13 @@ const Solution = ({ openSolution, setSolutionDialog }) => {
                             <TableCell>User Email</TableCell>
                             <TableCell>Problem</TableCell>
                             <TableCell>Solution</TableCell>
+                            <TableCell>Image</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {error ? (
                             <TableRow>
-                                <TableCell colSpan={3}>
+                                <TableCell colSpan={4}>
                                     <Typography>{error}</Typography>
                                 </TableCell>
                             </TableRow>
@@ -84,26 +86,28 @@ const Solution = ({ openSolution, setSolutionDialog }) => {
                                     <TableCell>{problem.email}</TableCell>
                                     <TableCell>{problem.problem}</TableCell>
                                     <TableCell>{problem.answer}</TableCell>
-                                    <TableCell>{problem.img && (
-                                        <>
-                                            <Button
-                                                variant='contained'
-                                                onClick={() => handleOpenImage(`${URL}/${problem.img}`)}
-                                            >
-                                                Open image
-                                            </Button>
-                                            {selectedImage === `${URL}/${problem.img}` && (
-                                                <Box mt={2}>
-                                                    <img
-                                                        src={`${URL}/${problem.img}`}
-                                                        alt="Problem Image"
-                                                        style={{ maxWidth: '100%', height: 'auto' }}
-                                                    />
-                                                    <Button onClick={handleCloseImage}>Close image</Button>
-                                                </Box>
-                                            )}
-                                        </>
-                                    )}</TableCell>
+                                    <TableCell>
+                                        {problem.img && (
+                                            <>
+                                                <Button
+                                                    variant='contained'
+                                                    onClick={() => handleOpenImage(problem.img)}
+                                                >
+                                                    Open image
+                                                </Button>
+                                                {selectedImage === problem.img && (
+                                                    <Box mt={2}>
+                                                        <img
+                                                            src={selectedImage}
+                                                            alt="Problem Image"
+                                                            style={{ maxWidth: '100%', height: 'auto' }}
+                                                        />
+                                                        <Button onClick={handleCloseImage}>Close image</Button>
+                                                    </Box>
+                                                )}
+                                            </>
+                                        )}
+                                    </TableCell>
                                 </TableRow>
                             ))
                         )}

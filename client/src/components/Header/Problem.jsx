@@ -4,9 +4,6 @@ import { authenticateProblem } from '../../service/api.js';
 import DataProvider, { DataContext } from '../../context/DataProvider.jsx';
 import ProblemList from './ProblemList.jsx';
 
-
-
-
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
     background-color: #f0f0f0;
@@ -41,68 +38,65 @@ const Error = styled(Typography)`
 
 const Problem = ({ openProblem, setProblemDialog }) => {
     const { user } = useContext(DataContext);
-    const [problem, setProblem] = useState({ name: '', email: '', problem: '', img: '' });
+    const [problem, setProblem] = useState({ name: '', email: '', problem: '', img: null });
     const [error, setError] = useState('');
     
     const onFileChange = (e) => {
-      setProblem({ ...problem, img: e.target.files[0] });
+        setProblem({ ...problem, img: e.target.files[0] });
     };
   
     const onValueChange = (e) => {
-      setProblem({ ...problem, [e.target.name]: e.target.value });
-    };
-    const onProblemChange = (e) => {
-      setProblem({ ...problem, problem: e.target.value });
+        setProblem({ ...problem, [e.target.name]: e.target.value });
     };
 
     const handleClose = () => {
-      setProblemDialog(false);
-      setError('');
-      setProblem({ name: '', email: '', problem: '', img: '' });
+        setProblemDialog(false);
+        setError('');
+        setProblem({ name: '', email: '', problem: '', img: null });
     };
   
     const addProblem = async () => {
-      try {
-          const formData = new FormData();
-          formData.append('name', problem.name);
-          formData.append('email', problem.email);
-          formData.append('problem', problem.problem); // Ensure problem is appended
-          formData.append('img', problem.img);
+        try {
+            const formData = new FormData();
+            formData.append('name', problem.name);
+            formData.append('email', problem.email);
+            formData.append('problem', problem.problem);
+            if (problem.img) {
+                formData.append('img', problem.img);
+            }
   
-          const response = await authenticateProblem(formData);
-          console.log(response.data);
-          if (response.status === 200) {
-              handleClose();
-              console.log(response.data);
-          } else {
-              setError(response.data.message || 'Error adding problem');
-          }
-      } catch (error) {
-          console.error('Error occurred while adding problem:', error);
-          setError('Error adding problem');
-      }
-  };
+            const response = await authenticateProblem(formData);
+            if (response.status === 200) {
+                handleClose();
+            } else {
+                setError(response.data.message || 'Error adding problem');
+            }
+        } catch (error) {
+            console.error('Error occurred while adding problem:', error);
+            setError('Error adding problem');
+        }
+    };
   
     return (
-      <StyledDialog open={openProblem} onClose={handleClose}>
-        {user === 'farmer' ? (
-          <ContentBox>
-            <TextField variant="standard" onChange={onValueChange} name="name" label="Enter name" />
-            <TextField variant="standard" onChange={onValueChange} name="email" label="Enter email" />
-            <TextField variant="standard" onChange={onProblemChange} name="problem" label="Describe your problem" multiline rows={8} />
-            <input type="file" name="img" onChange={onFileChange} />
-            {error && <Error>{error}</Error>}
-            <LoginButton onClick={addProblem}>Continue</LoginButton>
-          </ContentBox>
-        ) : (
-          <ContentBox>
-            <Box>
-              <ProblemList />
-            </Box>
-          </ContentBox>
-        )}
-      </StyledDialog>
+        <StyledDialog open={openProblem} onClose={handleClose}>
+            {user === 'farmer' ? (
+                <ContentBox>
+                    <TextField variant="standard" onChange={onValueChange} name="name" label="Enter name" />
+                    <TextField variant="standard" onChange={onValueChange} name="email" label="Enter email" />
+                    <TextField variant="standard" onChange={onValueChange} name="problem" label="Describe your problem" multiline rows={8} />
+                    <input type="file" name="img" onChange={onFileChange} />
+                    {error && <Error>{error}</Error>}
+                    <LoginButton onClick={addProblem}>Continue</LoginButton>
+                </ContentBox>
+            ) : (
+                <ContentBox>
+                    <Box>
+                        <ProblemList />
+                    </Box>
+                </ContentBox>
+            )}
+        </StyledDialog>
     );
-  };
-  
-  export default Problem;
+};
+
+export default Problem;

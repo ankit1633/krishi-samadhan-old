@@ -6,9 +6,9 @@ import AnswerProblem from '../Header/AnswerProblem.jsx';
 const ProblemList = () => {
     const [problems, setProblems] = useState([]);
     const [error, setError] = useState(null);
-    const [openAnswerDialog, setOpenAnswerDialog] = useState(false); // State to control the visibility of the AnswerQuestion dialog
-    const [selectedProblem, setSelectedProblem] = useState({ email: '', problem: '' }); // State to store the selected question
-    const [selectedImage, setSelectedImage] = useState(null); // State to store the selected image URL
+    const [openAnswerDialog, setOpenAnswerDialog] = useState(false);
+    const [selectedProblem, setSelectedProblem] = useState({ email: '', problem: '' });
+    const [selectedImage, setSelectedImage] = useState(null);
 
     useEffect(() => {
         const fetchProblems = async () => {
@@ -26,22 +26,24 @@ const ProblemList = () => {
         };
 
         fetchProblems();
-    }, []); // Empty dependency array ensures useEffect runs only once
+    }, []);
 
-    // Function to handle opening the AnswerQuestion dialog
     const handleOpenAnswerDialog = (email, problem) => {
-        setSelectedProblem({ email, problem }); // Set the selected question
-        setOpenAnswerDialog(true); // Open the AnswerQuestion dialog
+        setSelectedProblem({ email, problem });
+        setOpenAnswerDialog(true);
     };
 
-    // Function to handle opening the image
+    const handleCloseAnswerDialog = () => {
+        setOpenAnswerDialog(false);
+        setSelectedProblem({ email: '', problem: '' });
+    };
+
     const handleOpenImage = (imageUrl) => {
-        setSelectedImage(imageUrl); // Set the selected image URL
+        setSelectedImage(imageUrl);
     };
 
-    // Function to close the image view
     const handleCloseImage = () => {
-        setSelectedImage(null); // Reset selected image URL
+        setSelectedImage(null);
     };
 
     return (
@@ -67,16 +69,18 @@ const ProblemList = () => {
                                 <TableCell>{problem.email}</TableCell>
                                 <TableCell>{problem.problem}</TableCell>
                                 <TableCell>
-                                    <Button
-                                        variant='contained'
-                                        onClick={() => handleOpenImage(`http://localhost:8000/${problem.img}`)} // Replace with your actual server URL
-                                    >
-                                        Open image
-                                    </Button>
-                                    {selectedImage === `http://localhost:8000/${problem.img}` && (
+                                    {problem.img && (
+                                        <Button
+                                            variant='contained'
+                                            onClick={() => handleOpenImage(problem.img)}
+                                        >
+                                            Open image
+                                        </Button>
+                                    )}
+                                    {selectedImage === problem.img && (
                                         <Box mt={2}>
                                             <img
-                                                src={`http://localhost:8000/${problem.img}`}
+                                                src={selectedImage}
                                                 alt="Problem Image"
                                                 style={{ maxWidth: '100%', height: 'auto' }}
                                             />
@@ -98,13 +102,11 @@ const ProblemList = () => {
                     )}
                 </TableBody>
             </Table>
-            {/* Render AnswerQuestion dialog if openAnswerDialog is true */}
             <AnswerProblem
                 open={openAnswerDialog}
-                onClose={() => setOpenAnswerDialog(false)}
+                onClose={handleCloseAnswerDialog}
                 email={selectedProblem.email}
                 problem={selectedProblem.problem}
-                selectedProblem={selectedProblem} // Ensure to pass selectedQuestion prop
             />
         </TableContainer>
     );

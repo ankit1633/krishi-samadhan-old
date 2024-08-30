@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Dialog, TextField, Box, Typography, Button, styled } from '@mui/material';
-import { authenticateDistributorSignup,authenticateDistributorLogin } from '../../service/api.js';
+import { authenticateDistributorSignup, authenticateDistributorLogin } from '../../service/api.js';
 import { DataContext } from '../../context/DataProvider.jsx';
 
 const LoginButton = styled(Button)`
@@ -54,7 +54,7 @@ const Error = styled(Typography)`
 `;
 
 const loginInitialValues = {
-  username: '',
+  email: '',
   password: ''
 };
 
@@ -115,7 +115,7 @@ const DistributorLogin = ({ open, onClose }) => {
       if (response && response.status === 200) {
         handleClose();
         console.log(response.data);
-        setAccount(login.username);
+        setAccount(login.email);
         updateUser("distributor");
       } else {
         setError(true);
@@ -130,8 +130,8 @@ const DistributorLogin = ({ open, onClose }) => {
     <Dialog open={open} onClose={() => handleClose()}>
       {account.view === 'login' ? (
         <Wrapper>
-          <TextField variant="standard" onChange={(e) => onValueChange(e)} name='username' label='Enter Email/Mobile number' />
-          {error && <Error>Please enter valid Email ID/Mobile number</Error>}
+          <TextField variant="standard" onChange={(e) => onValueChange(e)} name='email' label='Enter Email' />
+          {error && <Error>Please enter valid Email</Error>}
           <TextField variant="standard" onChange={(e) => onValueChange(e)} name='password' label='Enter Password' />
           <Text>By continuing, you agree to Krishi-samadhans's Terms of Use and Privacy Policy.</Text>
           <LoginButton onClick={() => loginDistributor()}>Login</LoginButton>

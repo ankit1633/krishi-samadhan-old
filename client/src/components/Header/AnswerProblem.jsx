@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, TextField, Box, Button, styled } from '@mui/material';
+import { Dialog, TextField, Box, Button, styled, Typography } from '@mui/material';
 import { authenticateAddProblemAnswer } from '../../service/api.js';
 
 const LoginButton = styled(Button)`
@@ -25,48 +25,73 @@ const answerInitialValue = {
     body: ''
 };
 
-const AnswerProblem = ({ open, onClose, email, problem , selectedProblem}) => {
-
-    const [answer,setAnswer] = useState(answerInitialValue);
+const AnswerProblem = ({ open, onClose, email, problem }) => {
+    const [answer, setAnswer] = useState(answerInitialValue);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const onValueChange = (e) => {
-        setAnswer({...answer,[e.target.name]:e.target.value})
-    }
-
-    const handleClose = () => {
-        onClose(); // Close the dialog
-        setAnswer(answerInitialValue); // Reset login form fields
+        setAnswer({ ...answer, [e.target.name]: e.target.value });
     };
 
     const submitAnswer = async () => {
+        setLoading(true);
+        setError(null);
+
         try {
             const response = await authenticateAddProblemAnswer({
                 body: answer.body,
-                problem: problem 
+                problem: problem
             });
+
+            console.log('Response Status:', response.status);
+            console.log('Response Data:', response.data);
+
             if (response.status === 200) {
+                console.log('Submission successful:', response.data);
                 handleClose(); // Close the dialog on successful submission
-                console.log(response.data);
-            } 
+            } else {
+                setError('Submission failed. Please try again.');
+            }
         } catch (error) {
             console.error("Error occurred while adding answer:", error);
+            setError('An error occurred while submitting your answer.');
+        } finally {
+            setLoading(false);
         }
     };
 
-  return (
-    <Dialog open={open} onClose={handleClose} >
+    const handleClose = () => {
+        onClose();
+        setAnswer(answerInitialValue);
+    };
+
+    return (
+        <Dialog open={open} onClose={handleClose} fullWidth>
             <Wrapper>
+                {error && (
+                    <Typography color="error" variant="body2">
+                        {error}
+                    </Typography>
+                )}
                 <TextField
                     variant="standard"
-                    onChange={(e) => onValueChange(e)}
+                    onChange={onValueChange}
                     name='body'
                     label='Enter answer'
+                    value={answer.body}
+                    multiline
+                    rows={4}
                 />
-                <LoginButton onClick={submitAnswer}>Submit</LoginButton>
+                <LoginButton 
+                    onClick={submitAnswer}
+                    disabled={loading}
+                >
+                    {loading ? 'Submitting...' : 'Submit'}
+                </LoginButton>
             </Wrapper>
         </Dialog>
-    
-  )
+    );
 }
 
 export default AnswerProblem;

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 
 const distributorSchema = new mongoose.Schema({
   firstname: {
@@ -39,6 +40,20 @@ const distributorSchema = new mongoose.Schema({
   }
 });
 
-const Distributor = mongoose.model('distributor', distributorSchema);
+// Middleware to hash the password before saving
+distributorSchema.pre('save', async function(next) {
+  try {
+      if (this.isModified('password') || this.isNew) {  // Also check if it's a new document
+          const salt = await bcrypt.genSalt(12);
+          this.password = await bcrypt.hash(this.password, salt);
+      }
+      next();
+  } catch (error) {
+      next(error);
+  }
+});
+
+
+const Distributor = mongoose.model('Distributor', distributorSchema);
 
 export default Distributor;
