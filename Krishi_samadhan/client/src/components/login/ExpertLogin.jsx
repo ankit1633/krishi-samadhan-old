@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Dialog, TextField, Box, Typography, Button, styled } from '@mui/material';
+import { Dialog, TextField, Box, Typography, Button, styled, Snackbar, Alert } from '@mui/material';
 import { authenticateExpertLogin } from '../../service/api.js';
 import { DataContext } from '../../context/DataProvider.jsx';
 
@@ -35,10 +35,11 @@ const expertLoginInitialValues = {
     password: ''
 };
 
-const ExpertLogin = ({ open, onClose }) => {
-    const { setAccount , setUser,updateUser} = useContext(DataContext);
+const ExpertLogin = ({ open, onClose, onSuccess }) => {
+    const { setAccount, setUser, updateUser } = useContext(DataContext);
     const [expertLogin, setExpertLogin] = useState(expertLoginInitialValues);
     const [error, setError] = useState(false);
+    const [success, setSuccess] = useState(false); // State for managing success snackbar
 
     const onValueChange = (e) => {
         setExpertLogin({ ...expertLogin, [e.target.name]: e.target.value });
@@ -55,10 +56,11 @@ const ExpertLogin = ({ open, onClose }) => {
             const response = await authenticateExpertLogin(expertLogin);
             if (response.status === 200) {
                 handleClose(); // Close the dialog on successful login
-                console.log(response.data);
                 setAccount(expertLogin.username);
                 updateUser("expert");
                 setUser("expert");
+                setSuccess(true); // Show success message on successful login
+                onSuccess(); // Call onSuccess to close all dialogs
             } else {
                 setError(true); // Display error message if login fails
             }
@@ -69,26 +71,41 @@ const ExpertLogin = ({ open, onClose }) => {
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} >
-            <Wrapper>
-                <TextField
-                    variant="standard"
-                    onChange={onValueChange}
-                    name='username'
-                    label='Enter Email/Mobile number'
-                    value={expertLogin.username} // Bind value to state
-                />
-                {error && <Error>Please enter valid Email ID/Mobile number</Error>}
-                <TextField
-                    variant="standard"
-                    onChange={onValueChange}
-                    name='password'
-                    label='Enter Password'
-                    value={expertLogin.password} // Bind value to state
-                />
-                <LoginButton onClick={loginExpert}>Login</LoginButton>
-            </Wrapper>
-        </Dialog>
+        <>
+            <Dialog open={open} onClose={handleClose} >
+                <Wrapper>
+                    <TextField
+                        variant="standard"
+                        onChange={onValueChange}
+                        name='username'
+                        label='Enter Email/Mobile number'
+                        value={expertLogin.username} // Bind value to state
+                    />
+                    {error && <Error>Please enter valid Email ID/Mobile number</Error>}
+                    <TextField
+                        variant="standard"
+                        onChange={onValueChange}
+                        name='password'
+                        label='Enter Password'
+                        type="password"
+                        value={expertLogin.password} // Bind value to state
+                    />
+                    <LoginButton onClick={loginExpert}>Login</LoginButton>
+                </Wrapper>
+            </Dialog>
+
+            {/* Snackbar for Success Message */}
+            <Snackbar
+                open={success}
+                autoHideDuration={4000}
+                onClose={() => setSuccess(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+                    Successfully logged in!
+                </Alert>
+            </Snackbar>
+        </>
     );
 };
 

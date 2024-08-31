@@ -3,8 +3,6 @@ import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import { DataContext } from '../../context/DataProvider';
 import { authenticateGetSolution } from '../../service/api';
 
-const URL = 'http://localhost:8000';  // Your server URL
-
 const StyledDialog = styled(Dialog)`
   .MuiDialog-paper {
     background-color: #f0f0f0;
@@ -13,6 +11,12 @@ const StyledDialog = styled(Dialog)`
     max-width: 800px;
     height: 80%;
     max-height: 600px;
+    @media (max-width: 600px) {
+      width: 90%;
+      max-width: none;
+      height: 90%;
+      max-height: none;
+    }
   }
 `;
 
@@ -63,46 +67,47 @@ const Solution = ({ openSolution, setSolutionDialog }) => {
 
     return (
         <StyledDialog open={openSolution} onClose={handleClose}>
-            <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+            <TableContainer component={Paper} sx={{ boxShadow: 2, padding: { xs: '8px', sm: '16px' } }}>
                 <Table>
                     <TableHead sx={{ backgroundColor: '#f0f0f0' }}>
                         <TableRow>
-                            <TableCell>User Email</TableCell>
-                            <TableCell>Problem</TableCell>
-                            <TableCell>Solution</TableCell>
-                            <TableCell>Image</TableCell>
+                            <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>User Email</TableCell>
+                            <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>Problem</TableCell>
+                            <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>Solution</TableCell>
+                            <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>Image</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {error ? (
                             <TableRow>
                                 <TableCell colSpan={4}>
-                                    <Typography>{error}</Typography>
+                                    <Typography sx={{ textAlign: 'center' }}>{error}</Typography>
                                 </TableCell>
                             </TableRow>
                         ) : (
                             problems.map(problem => (
                                 <TableRow key={problem._id} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
-                                    <TableCell>{problem.email}</TableCell>
-                                    <TableCell>{problem.problem}</TableCell>
-                                    <TableCell>{problem.answer}</TableCell>
+                                    <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>{problem.email}</TableCell>
+                                    <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>{problem.problem}</TableCell>
+                                    <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>{problem.answer}</TableCell>
                                     <TableCell>
                                         {problem.img && (
                                             <>
                                                 <Button
                                                     variant='contained'
                                                     onClick={() => handleOpenImage(problem.img)}
+                                                    sx={{ fontSize: { xs: '10px', sm: '14px' }, padding: { xs: '6px', sm: '8px' } }}
                                                 >
                                                     Open image
                                                 </Button>
                                                 {selectedImage === problem.img && (
-                                                    <Box mt={2}>
+                                                    <Box mt={2} sx={{ textAlign: 'center' }}>
                                                         <img
                                                             src={selectedImage}
                                                             alt="Problem Image"
                                                             style={{ maxWidth: '100%', height: 'auto' }}
                                                         />
-                                                        <Button onClick={handleCloseImage}>Close image</Button>
+                                                        <Button onClick={handleCloseImage} sx={{ marginTop: 1 }}>Close image</Button>
                                                     </Box>
                                                 )}
                                             </>

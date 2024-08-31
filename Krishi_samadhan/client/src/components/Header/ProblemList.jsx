@@ -47,8 +47,8 @@ const ProblemList = () => {
     };
 
     return (
-        <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
-            <Table>
+        <TableContainer component={Paper} sx={{ boxShadow: 2, maxWidth: '100%', overflowX: 'auto' }}>
+            <Table sx={{ minWidth: 650 }}>
                 <TableHead sx={{ backgroundColor: '#f0f0f0' }}>
                     <TableRow>
                         <TableCell>User Email</TableCell>
@@ -59,7 +59,7 @@ const ProblemList = () => {
                 <TableBody>
                     {error ? (
                         <TableRow>
-                            <TableCell colSpan={3}>
+                            <TableCell colSpan={4}>
                                 <Typography>{error}</Typography>
                             </TableCell>
                         </TableRow>
@@ -73,6 +73,7 @@ const ProblemList = () => {
                                         <Button
                                             variant='contained'
                                             onClick={() => handleOpenImage(problem.img)}
+                                            sx={{ fontSize: '0.75rem', padding: '6px 12px' }} // Smaller button on small screens
                                         >
                                             Open image
                                         </Button>
@@ -84,7 +85,9 @@ const ProblemList = () => {
                                                 alt="Problem Image"
                                                 style={{ maxWidth: '100%', height: 'auto' }}
                                             />
-                                            <Button onClick={handleCloseImage}>Close image</Button>
+                                            <Button onClick={handleCloseImage} sx={{ marginTop: 1 }}>
+                                                Close image
+                                            </Button>
                                         </Box>
                                     )}
                                 </TableCell>
@@ -93,6 +96,7 @@ const ProblemList = () => {
                                         onClick={() => handleOpenAnswerDialog(problem.email, problem.problem)}
                                         variant="contained"
                                         color="primary"
+                                        sx={{ fontSize: '0.75rem', padding: '6px 12px' }} // Smaller button on small screens
                                     >
                                         Answer
                                     </Button>

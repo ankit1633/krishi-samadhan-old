@@ -54,6 +54,10 @@ const LoginDialog = ({ open, setOpen }) => {
     setDistributorLogin(true);
   };
 
+  const handleSuccess = () => {
+    handleClose();
+  };
+
   return (
     <StyledDialog open={open} onClose={handleClose}>
       <ContentBox>
@@ -61,9 +65,9 @@ const LoginDialog = ({ open, setOpen }) => {
         <StyledButton variant='contained' onClick={openExpertLoginDialog}>Expert Login</StyledButton>
         <StyledButton variant='contained' onClick={openDistributorLoginDialog}>Distributor Login</StyledButton>
       </ContentBox>
-      <FarmerLogin open={farmerLogin} onClose={() => setFarmerLogin(false)} />
-      <ExpertLogin open={expertLogin} onClose={() => setExpertLogin(false)} />
-      <DistributorLogin open={distributorLogin} onClose={() => setDistributorLogin(false)} />
+      <FarmerLogin open={farmerLogin} onClose={() => setFarmerLogin(false)} onSuccess={handleSuccess} />
+      <ExpertLogin open={expertLogin} onClose={() => setExpertLogin(false)} onSuccess={handleSuccess} />
+      <DistributorLogin open={distributorLogin} onClose={() => setDistributorLogin(false)} onSuccess={handleSuccess} />
     </StyledDialog>
   );
 };

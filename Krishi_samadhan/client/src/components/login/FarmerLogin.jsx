@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Dialog, TextField, Box, Typography, Button, styled } from '@mui/material';
+import { Dialog, TextField, Box, Typography, Button, styled, Snackbar, Alert } from '@mui/material';
 import { authenticateSignup, authenticateLogin } from '../../service/api';
 import { DataContext } from '../../context/DataProvider';
 
@@ -72,12 +72,13 @@ const accountInitialValues = {
   signup: { view: 'signup' }
 };
 
-const FarmerLogin = ({ open, onClose }) => {
+const FarmerLogin = ({ open, onClose, onSuccess }) => {
   const { setAccount, updateUser } = useContext(DataContext);
   const [account, toggleAccount] = useState(accountInitialValues.login);
   const [signup, setSignup] = useState(signupInitialValues);
   const [login, setLogin] = useState(loginInitialValues);
   const [error, setError] = useState(false);
+  const [success, setSuccess] = useState(false);  // State for managing success snackbar
 
   const onValueChange = (e) => {
     setLogin({ ...login, [e.target.name]: e.target.value });
@@ -91,6 +92,7 @@ const FarmerLogin = ({ open, onClose }) => {
     onClose();
     toggleAccount(accountInitialValues.login);
     setError(false);
+    setSuccess(false);  // Reset success state on close
   };
 
   const onInputChange = (e) => {
@@ -98,11 +100,20 @@ const FarmerLogin = ({ open, onClose }) => {
   };
 
   const signupUser = async () => {
-    const response = await authenticateSignup(signup);
-    if (!response) return;
-    handleClose();
-    setAccount(signup.username);
-    updateUser('farmer');
+    try {
+      const response = await authenticateSignup(signup);
+      if (response && response.status === 200) {
+        handleClose();
+        setAccount(signup.username);
+        updateUser('farmer');
+        onSuccess();  // Notify success
+      } else {
+        setError(true);
+      }
+    } catch (error) {
+      console.error('Error occurred during signup:', error);
+      setError(true);
+    }
   };
 
   const loginUser = async () => {
@@ -115,6 +126,8 @@ const FarmerLogin = ({ open, onClose }) => {
         handleClose();
         setAccount(login.email);
         updateUser('farmer');
+        setSuccess(true);  // Show success message on successful login
+        onSuccess();  // Notify success
       } else {
         setError(true);
       }
@@ -126,72 +139,94 @@ const FarmerLogin = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={handleClose}>
-      {account.view === 'login' ? (
-        <Wrapper>
-          <TextField
-            variant="standard"
-            onChange={onValueChange}
-            name="email"
-            label="Enter Email"
-          />
-          {error && <Error>Please enter valid Email and Password</Error>}
-          <TextField
-            variant="standard"
-            onChange={onValueChange}
-            name="password"
-            label="Enter Password"
-            type="password"
-          />
-          <Text>
-            By continuing, you agree to Krishi-samadhan's Terms of Use and Privacy Policy.
-          </Text>
-          <LoginButton onClick={loginUser}>Login</LoginButton>
-          <Text style={{ textAlign: 'center' }}>OR</Text>
-          <RequestOTP>Request OTP</RequestOTP>
-          <CreateAccount onClick={toggleSignup}>New to Krishi-samadhan? Create an account</CreateAccount>
-        </Wrapper>
-      ) : (
-        <Wrapper>
-          <TextField
-            variant="standard"
-            onChange={onInputChange}
-            name="firstname"
-            label="Enter Firstname"
-          />
-          <TextField
-            variant="standard"
-            onChange={onInputChange}
-            name="lastname"
-            label="Enter Lastname"
-          />
-          <TextField
-            variant="standard"
-            onChange={onInputChange}
-            name="username"
-            label="Enter Username"
-          />
-          <TextField
-            variant="standard"
-            onChange={onInputChange}
-            name="email"
-            label="Enter Email"
-          />
-          <TextField
-            variant="standard"
-            onChange={onInputChange}
-            name="password"
-            label="Enter Password"
-            type="password"
-          />
-          <TextField
-            variant="standard"
-            onChange={onInputChange}
-            name="phone"
-            label="Enter Phone"
-          />
-          <LoginButton onClick={signupUser}>Continue</LoginButton>
-        </Wrapper>
-      )}
+      <Wrapper>
+        {account.view === 'login' ? (
+          <>
+            <TextField
+              variant="standard"
+              onChange={onValueChange}
+              name="email"
+              label="Enter Email"
+              fullWidth
+            />
+            {error && <Error>Please enter valid Email and Password</Error>}
+            <TextField
+              variant="standard"
+              onChange={onValueChange}
+              name="password"
+              label="Enter Password"
+              type="password"
+              fullWidth
+            />
+            <Text>
+              By continuing, you agree to Krishi-samadhan's Terms of Use and Privacy Policy.
+            </Text>
+            <LoginButton onClick={loginUser} fullWidth>Login</LoginButton>
+            <Text style={{ textAlign: 'center' }}>OR</Text>
+            <RequestOTP>Request OTP</RequestOTP>
+            <CreateAccount onClick={toggleSignup}>New to Krishi-samadhan? Create an account</CreateAccount>
+          </>
+        ) : (
+          <>
+            <TextField
+              variant="standard"
+              onChange={onInputChange}
+              name="firstname"
+              label="Enter Firstname"
+              fullWidth
+            />
+            <TextField
+              variant="standard"
+              onChange={onInputChange}
+              name="lastname"
+              label="Enter Lastname"
+              fullWidth
+            />
+            <TextField
+              variant="standard"
+              onChange={onInputChange}
+              name="username"
+              label="Enter Username"
+              fullWidth
+            />
+            <TextField
+              variant="standard"
+              onChange={onInputChange}
+              name="email"
+              label="Enter Email"
+              fullWidth
+            />
+            <TextField
+              variant="standard"
+              onChange={onInputChange}
+              name="password"
+              label="Enter Password"
+              type="password"
+              fullWidth
+            />
+            <TextField
+              variant="standard"
+              onChange={onInputChange}
+              name="phone"
+              label="Enter Phone"
+              fullWidth
+            />
+            <LoginButton onClick={signupUser} fullWidth>Continue</LoginButton>
+          </>
+        )}
+      </Wrapper>
+
+      {/* Snackbar for Success Message */}
+      <Snackbar
+        open={success}
+        autoHideDuration={4000}
+        onClose={() => setSuccess(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSuccess(false)} severity="success" sx={{ width: '100%' }}>
+          Successfully logged in!
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 };

@@ -1,46 +1,63 @@
 import React, { useContext, useState } from 'react';
-import { Box, Typography, TextField, Button, styled, Dialog } from '@mui/material';
+import { Box, Typography, TextField, Button, styled, Dialog, Snackbar, Alert } from '@mui/material';
 import { authenticateProblem } from '../../service/api.js';
-import DataProvider, { DataContext } from '../../context/DataProvider.jsx';
+import { DataContext } from '../../context/DataProvider.jsx'; // Updated import path
 import ProblemList from './ProblemList.jsx';
 
-const StyledDialog = styled(Dialog)`
-  .MuiDialog-paper {
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    width: 60%;
-    height: 50%;
-  }
-`;
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+    '.MuiDialog-paper': {
+        background: '#f8f8f8', // Off-white background
+        borderRadius: '10px',
+        width: '80%', // Adjusted width for smaller screens
+        maxWidth: '600px', // Maximum width for large screens
+        height: 'auto', // Adjust height to fit content
+        [theme.breakpoints.down('sm')]: {
+            width: '90%', // Further adjust width for extra small screens
+        },
+    },
+}));
 
-const ContentBox = styled(Box)`
-  background-color: #FFFFFF;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  border-radius: 10px;
-`;
+const ContentBox = styled(Box)(({ theme }) => ({
+    background: '#f8f8f8', // Off-white background
+    padding: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: '10px',
+    color: '#00796b', // Teal text color
+    [theme.breakpoints.down('sm')]: {
+        padding: '15px', // Adjust padding for smaller screens
+    },
+}));
 
-const LoginButton = styled(Button)`
-  text-transform: none;
-  background: #FB641B;
-  color: #fff;
-  height: 48px;
-  border-radius: 2px;
-  margin-top: 20px;
-`;
+const LoginButton = styled(Button)(({ theme, enabled }) => ({
+    textTransform: 'none',
+    background: enabled ? '#fdd835' : '#f0f0f0', // Light yellow background for enabled state
+    color: enabled ? '#000000' : '#bdbdbd', // Black text color for enabled state
+    height: '48px',
+    borderRadius: '2px',
+    marginTop: '20px',
+    '&:hover': {
+        background: enabled ? '#fbc02d' : '#e0e0e0', // Darker yellow on hover
+        color: '#000000', // Black text color on hover for better contrast
+    },
+    [theme.breakpoints.down('sm')]: {
+        width: '100%', // Full width on small screens
+        fontSize: '14px', // Adjust font size for better readability on smaller screens
+    },
+}));
 
 const Error = styled(Typography)`
-  font-size: 10px;
-  color: #ff6161;
-  margin-top: 5px;
+    font-size: 20px;
+    color: #ff6161;
+    margin-top: 5px;
 `;
 
 const Problem = ({ openProblem, setProblemDialog }) => {
     const { user } = useContext(DataContext);
     const [problem, setProblem] = useState({ name: '', email: '', problem: '', img: null });
     const [error, setError] = useState('');
-    
+    const [successMessage, setSuccessMessage] = useState(false); // State for success message
+  
     const onFileChange = (e) => {
         setProblem({ ...problem, img: e.target.files[0] });
     };
@@ -53,6 +70,10 @@ const Problem = ({ openProblem, setProblemDialog }) => {
         setProblemDialog(false);
         setError('');
         setProblem({ name: '', email: '', problem: '', img: null });
+    };
+
+    const handleSnackbarClose = () => {
+        setSuccessMessage(false);
     };
   
     const addProblem = async () => {
@@ -67,6 +88,7 @@ const Problem = ({ openProblem, setProblemDialog }) => {
   
             const response = await authenticateProblem(formData);
             if (response.status === 200) {
+                setSuccessMessage(true); // Show success message
                 handleClose();
             } else {
                 setError(response.data.message || 'Error adding problem');
@@ -77,16 +99,52 @@ const Problem = ({ openProblem, setProblemDialog }) => {
         }
     };
   
+    // Check if all fields are filled
+    const isButtonEnabled = problem.name && problem.email && problem.problem;
+
     return (
         <StyledDialog open={openProblem} onClose={handleClose}>
             {user === 'farmer' ? (
                 <ContentBox>
-                    <TextField variant="standard" onChange={onValueChange} name="name" label="Enter name" />
-                    <TextField variant="standard" onChange={onValueChange} name="email" label="Enter email" />
-                    <TextField variant="standard" onChange={onValueChange} name="problem" label="Describe your problem" multiline rows={8} />
-                    <input type="file" name="img" onChange={onFileChange} />
+                    <TextField
+                        variant="standard"
+                        onChange={onValueChange}
+                        name="name"
+                        label="Enter name"
+                        required
+                        InputLabelProps={{ style: { color: '#00796b' } }} // Teal label color
+                        InputProps={{ style: { color: '#00796b' } }} // Teal input text color
+                    />
+                    <TextField
+                        variant="standard"
+                        onChange={onValueChange}
+                        name="email"
+                        label="Enter email"
+                        required
+                        InputLabelProps={{ style: { color: '#00796b' } }} // Teal label color
+                        InputProps={{ style: { color: '#00796b' } }} // Teal input text color
+                    />
+                    <TextField
+                        variant="standard"
+                        onChange={onValueChange}
+                        name="problem"
+                        label="Describe your problem"
+                        multiline
+                        rows={8}
+                        required
+                        InputLabelProps={{ style: { color: '#00796b' } }} // Teal label color
+                        InputProps={{ style: { color: '#00796b' } }} // Teal input text color
+                    />
+                    <input
+                        type="file"
+                        name="img"
+                        onChange={onFileChange}
+                        style={{ marginTop: '10px' }} // Margin for spacing
+                    />
                     {error && <Error>{error}</Error>}
-                    <LoginButton onClick={addProblem}>Continue</LoginButton>
+                    <LoginButton onClick={addProblem} enabled={isButtonEnabled}>
+                        Continue
+                    </LoginButton>
                 </ContentBox>
             ) : (
                 <ContentBox>
@@ -95,6 +153,12 @@ const Problem = ({ openProblem, setProblemDialog }) => {
                     </Box>
                 </ContentBox>
             )}
+            {/* Snackbar for success message */}
+            <Snackbar open={successMessage} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+                    Problem added successfully!
+                </Alert>
+            </Snackbar>
         </StyledDialog>
     );
 };

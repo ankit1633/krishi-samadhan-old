@@ -25,17 +25,17 @@ const WarehouseList = () => {
     }, []); // Empty dependency array ensures useEffect runs only once
 
     return (
-        <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+        <TableContainer component={Paper} sx={{ boxShadow: 2, overflowX: 'auto' }}>
             <Table>
                 <TableHead sx={{ backgroundColor: '#f0f0f0' }}>
                     <TableRow>
-                        <TableCell>ID</TableCell>
+                        <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>ID</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Email</TableCell>
                         <TableCell>Address</TableCell>
                         <TableCell>Contact</TableCell>
                         <TableCell>Capacity</TableCell>
-                        <TableCell>Price</TableCell>
+                        <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Price</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -48,13 +48,13 @@ const WarehouseList = () => {
                     ) : (
                         warehouses.map(warehouse => (
                             <TableRow key={warehouse.id} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
-                                <TableCell>{warehouse.id}</TableCell>
+                                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{warehouse.id}</TableCell>
                                 <TableCell>{warehouse.name}</TableCell>
                                 <TableCell>{warehouse.email}</TableCell>
                                 <TableCell>{warehouse.address}</TableCell>
                                 <TableCell>{warehouse.contact}</TableCell>
                                 <TableCell>{warehouse.capacity}</TableCell>
-                                <TableCell>{warehouse.price}</TableCell>
+                                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{warehouse.price}</TableCell>
                             </TableRow>
                         ))
                     )}

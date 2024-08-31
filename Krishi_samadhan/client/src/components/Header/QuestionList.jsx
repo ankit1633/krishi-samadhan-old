@@ -3,6 +3,25 @@ import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, Tab
 import { authenticateGetQuestion } from '../../service/api.js';
 import AnswerQuestion from './AnswerQuestion.jsx';
 
+const StyledTableContainer = styled(TableContainer)`
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    @media (max-width: 600px) {
+        padding: 0 10px; /* Add padding on small screens */
+    }
+`;
+
+const StyledTable = styled(Table)`
+    @media (max-width: 600px) {
+        font-size: 12px; /* Reduce font size on small screens */
+    }
+`;
+
+const StyledTableCell = styled(TableCell)`
+    @media (max-width: 600px) {
+        padding: 8px; /* Reduce padding on small screens */
+    }
+`;
+
 const QuestionList = () => {
     const [questions, setQuestions] = useState([]);
     const [error, setError] = useState(null);
@@ -34,51 +53,53 @@ const QuestionList = () => {
     };
 
     return (
-        <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
-            <Table>
+        <StyledTableContainer component={Paper}>
+            <StyledTable>
                 <TableHead sx={{ backgroundColor: '#f0f0f0' }}>
                     <TableRow>
-                        <TableCell>User Email</TableCell>
-                        <TableCell>Question</TableCell>
-                        <TableCell>Action</TableCell>
+                        <StyledTableCell>User Email</StyledTableCell>
+                        <StyledTableCell>Question</StyledTableCell>
+                        <StyledTableCell>Action</StyledTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
                     {error ? (
                         <TableRow>
-                            <TableCell colSpan={3}>
+                            <StyledTableCell colSpan={3}>
                                 <Typography>{error}</Typography>
-                            </TableCell>
+                            </StyledTableCell>
                         </TableRow>
                     ) : (
                         questions.map(question => (
                             <TableRow key={question._id} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f9f9f9' } }}>
-                                <TableCell>{question.email}</TableCell>
-                                <TableCell>{question.question}</TableCell>
-                                <TableCell>
+                                <StyledTableCell>{question.email}</StyledTableCell>
+                                <StyledTableCell>{question.question}</StyledTableCell>
+                                <StyledTableCell>
                                     <Button
                                         onClick={() => handleOpenAnswerDialog(question.email, question.question)} // Call handleOpenAnswerDialog with email and question parameters
                                         variant="contained"
                                         color="primary"
+                                        sx={{ 
+                                            fontSize: { xs: '10px', sm: '14px' }, // Responsive font size for button
+                                            padding: { xs: '8px', sm: '12px' } // Responsive padding for button
+                                        }}
                                     >
                                         Answer
                                     </Button>
-                                </TableCell>
+                                </StyledTableCell>
                             </TableRow>
                         ))
                     )}
                 </TableBody>
-            </Table>
+            </StyledTable>
             {/* Render AnswerQuestion dialog if openAnswerDialog is true */}
             <AnswerQuestion
-    open={openAnswerDialog}
-    onClose={() => setOpenAnswerDialog(false)}
-    email={selectedQuestion.email}
-    question={selectedQuestion.question}
-    selectedQuestion={selectedQuestion} // Ensure to pass selectedQuestion prop
-/>
-
-        </TableContainer>
+                open={openAnswerDialog}
+                onClose={() => setOpenAnswerDialog(false)}
+                email={selectedQuestion.email}
+                question={selectedQuestion.question}
+            />
+        </StyledTableContainer>
     );
 };
 

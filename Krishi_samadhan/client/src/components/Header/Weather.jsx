@@ -1,7 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Dialog, DialogTitle, DialogContent, IconButton, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { styled } from '@mui/material/styles';
 import { authenticateGetWeather } from '../../service/api'; // Ensure correct import
+
+// Styled Button
+const StyledButton = styled(Button)`
+    color: #008000;
+    background: #F3CA52;
+    text-transform: none;
+    font-weight: 600;
+    border-radius: 50px;
+    padding: 8px 20px; /* Adjust padding for better spacing */
+    height: 40px; /* Set a consistent height */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    width: 180px; /* Initial width */
+    transition: width 0.3s ease, background-color 0.3s ease; /* Smooth transition for width and color */
+    text-align: center; /* Center text */
+    display: flex;
+    align-items: center; /* Center text vertically */
+    justify-content: center; /* Center text horizontally */
+    
+    &:hover {
+        width: 220px; /* Increase the width on hover */
+        background: #E0B646; /* Darken the background color on hover */
+    }
+`;
 
 const Weather = () => {
     const [weatherData, setWeatherData] = useState([]);
@@ -72,9 +96,9 @@ const Weather = () => {
 
     return (
         <div>
-            <Button variant="contained" color="primary" onClick={handleOpen} style={{ marginBottom: '1rem' }}>
+            <StyledButton onClick={handleOpen}>
                 Show Weather
-            </Button>
+            </StyledButton>
             <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
                 <DialogTitle>
                     Weather Information
